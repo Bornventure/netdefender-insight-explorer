@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/components/ui/sonner";
+import { useAuth } from "@/context/AuthContext";
 
 export function SignInForm() {
   const [email, setEmail] = useState("");
@@ -15,6 +16,7 @@ export function SignInForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [systemType, setSystemType] = useState<"isp" | "main" | "portal">("isp");
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,16 +42,24 @@ export function SignInForm() {
       };
       
       if (systemType === "isp" && mockUserRoles.isp.length) {
-        localStorage.setItem("user", JSON.stringify({ 
+        const userData = { 
           email, 
           roles: mockUserRoles.isp,
           system: systemType,
           token: "mock-jwt-token"
-        }));
+        };
+        
+        // Use the login function from AuthContext instead of just setting localStorage
+        login(userData);
+        
         toast.success("Authentication successful", {
           description: "Welcome to the ISP Management System"
         });
-        navigate("/dashboard");
+        
+        // Ensure navigation happens after login is complete
+        setTimeout(() => {
+          navigate("/dashboard");
+        }, 100);
       } else {
         toast.error("Authentication failed", {
           description: `You don't have access to the ${systemType} system.`
@@ -76,7 +86,7 @@ export function SignInForm() {
           <Shield className="h-12 w-12 text-cyber-green" />
         </div>
         <CardTitle className="text-2xl text-center text-cyber-green">Sign In</CardTitle>
-        <CardDescription className="text-center text-slate-400">
+        <CardDescription className="text-center text-slate-300">
           Access the ISP Management System
         </CardDescription>
       </CardHeader>

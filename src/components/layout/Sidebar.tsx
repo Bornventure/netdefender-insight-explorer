@@ -12,7 +12,9 @@ import {
   HardDrive,
   Map,
   Calendar,
-  Inventory,
+  // Replacing the incorrect Inventory import with a valid alternative
+  // Inventory was causing build error
+  Package,
   Settings,
   LogOut,
   ChevronDown,
